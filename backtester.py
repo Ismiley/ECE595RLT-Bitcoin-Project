@@ -8,6 +8,7 @@ class Backtester:
     def __init__(self, data, initial_balance=10000):
         self.data = data
         self.initial_balance = initial_balance
+        self.action_counter = {i: 0 for i in range(20)}  # Assuming 20 different actions
         self.reset()
 
     def reset(self):
@@ -17,20 +18,32 @@ class Backtester:
 
     def step(self, action, current_price):
         """
-        Execute a trading action:
+        Execute a trading action with transaction costs:
         0-9 -> Buy in 10% increments
         10 -> Hold
         11-19 -> Sell in 10% increments
+        Transaction cost is 1% of the traded amount.
         """
+        # Increment the action counter
+        self.action_counter[action] += 1
+
+        transaction_cost_rate = 0.01  # 1% transaction cost
+
         if action < 10:  # Buy
-            buy_fraction = (action + 1) * 0.1  # 0 corresponds to 10%, 1 corresponds to 20%, ..., 9 corresponds to 100%
+            buy_fraction = (action + 1) * 0.1  # 10% to 100%
             investment = self.balance * buy_fraction
-            self.held_bitcoins += investment / current_price
-            self.balance -= investment
+            transaction_cost = investment * transaction_cost_rate
+            investment_after_cost = investment - transaction_cost
+            self.held_bitcoins += investment_after_cost / current_price
+            self.balance -= investment  # Subtract the original investment from balance
+
         elif action > 10:  # Sell
-            sell_fraction = (action - 10) * 0.1  # 11 corresponds to 10%, 12 corresponds to 20%, ..., 19 corresponds to 90%
+            sell_fraction = (action - 10) * 0.1  # 10% to 90%
             bitcoins_to_sell = self.held_bitcoins * sell_fraction
-            self.balance += bitcoins_to_sell * current_price
+            revenue = bitcoins_to_sell * current_price
+            transaction_cost = revenue * transaction_cost_rate
+            revenue_after_cost = revenue - transaction_cost
+            self.balance += revenue_after_cost
             self.held_bitcoins -= bitcoins_to_sell
         
         # Update the net worth
@@ -77,13 +90,14 @@ class Backtester:
         net_worths = []
 
         for i in range(window_size, len(self.data)):  
-            state = self.get_state(i, window_size)  # Get the current state
-            action = strategy.act(state)  # Determine action based on trained policy
+            state = self.get_state(i, window_size)
+            action = strategy.act(state)
             price = self.data.iloc[i]['Price']
-            net_worth = self.step(action, price)  # Execute action to get new net worth
-            net_worths.append(net_worth)  # Record the net worth for evaluation
-        
-        return net_worths
+            net_worth = self.step(action, price)
+            net_worths.append(net_worth)
+
+        # Return both net worths and action counter
+        return net_worths, self.action_counter
 
 
 

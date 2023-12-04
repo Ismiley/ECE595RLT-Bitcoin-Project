@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+import pickle
 
 class DQN:
     def __init__(self, input_dim, action_space, learning_rate=0.001):
@@ -9,7 +10,7 @@ class DQN:
         self.gamma = 0.99
         self.epsilon = 1.0
         self.epsilon_min = 0.01
-        self.epsilon_decay = 0.995
+        self.epsilon_decay = 0.9995
         self.model = self.create_model(learning_rate)
 
     def create_model(self, learning_rate):
@@ -53,6 +54,16 @@ class DQN:
 
     def save_model(self, filename):
         self.model.save(filename)
+        # Save epsilon value
+        with open(filename + '_epsilon.pkl', 'wb') as f:
+            pickle.dump(self.epsilon, f)
 
     def load_model(self, filename):
         self.model = tf.keras.models.load_model(filename)
+        # Load epsilon value
+        try:
+            with open(filename + '_epsilon.pkl', 'rb') as f:
+                self.epsilon = pickle.load(f)
+        except FileNotFoundError:
+            # If the file doesn't exist, keep the default epsilon
+            pass

@@ -34,7 +34,15 @@ def test_dqn(model_path):
 
     # Backtest using the loaded model on the testing data
     # net_worths = backtester.backtest(dqn_strategy, window_size, batch_size=32)
-    net_worths = backtester.backtest(dqn_strategy, window_size)
+    # net_worths = backtester.backtest(dqn_strategy, window_size)
+
+    # Backtest using the loaded model
+    net_worths, action_counts = backtester.backtest(dqn_strategy, window_size)
+
+    # Output the action frequencies to a CSV file
+    action_counts_df = pd.DataFrame(list(action_counts.items()), columns=['Action', 'Frequency'])
+    action_counts_df.to_csv('action_frequencies.csv', index=False)
+
     # Plot the net worth over time
     pd.Series(net_worths).plot(title="Net Worth Over Time: DQN")
     plt.xlabel('Time (Elapsed Hours)')
@@ -43,4 +51,4 @@ def test_dqn(model_path):
     plt.show()
 
 if __name__ == "__main__":
-    test_dqn("dqn_model_after_epoch_2.h5") # Make sure to put the correct model file here.
+    test_dqn("dqn_model_after_epoch_7.h5") # Make sure to put the correct model file here.

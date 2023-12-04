@@ -42,11 +42,22 @@ def train_dqn():
     metrics_filename = 'dqn_training_metrics.csv'
     initialize_csv(metrics_filename, ['Epoch', 'Average Reward', 'Loss', 'Epsilon'])
 
-    num_epochs = 10
+    
+
+    num_epochs = 13 # set back to 10
     batch_size = 32  # Define batch size for training
     steps_until_replay = 0  # Counter for steps until replay
 
-    for epoch in range(num_epochs):
+    # Check for the most recent model
+    start_epoch = 0
+    for epoch in range(num_epochs, 0, -1):
+        model_filename = f"dqn_model_after_epoch_{epoch}.h5"
+        if os.path.exists(model_filename):
+            dqn_strategy.load_model(model_filename)
+            start_epoch = epoch
+            break
+
+    for epoch in range(start_epoch, num_epochs):
         print(f"Training Epoch {epoch + 1}/{num_epochs}...")
 
         epoch_rewards = []
