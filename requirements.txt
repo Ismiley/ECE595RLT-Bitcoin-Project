@@ -1,0 +1,15 @@
+# List of dependencies for the ECE595RLT-Bitcoin-Project
+
+# Data handling
+numpy
+pandas
+
+# Data visualization
+matplotlib
+
+# Machine Learning
+scikit-learn
+
+# Deep Learning
+tensorflow
+keras
