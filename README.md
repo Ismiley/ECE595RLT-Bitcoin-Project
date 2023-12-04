@@ -21,15 +21,14 @@ This project requires several dependencies to run. You can install them using th
 pip install -r requirements.txt
 ```
 
-## Usage
-# Steps to download the dataset:
+# Usage
+## Steps to download the dataset:
 1) Go to the website: https://www.kaggle.com/datasets/mczielinski/bitcoin-historical-data
 2) Click download: This is a 105MB file.
 
-
-# Steps to train model:
+## Steps to train model:
 1) In backtester.py , define your transaction cost rate for the backtester by setting a value for the 'transaction_cost_rate' variable.
-2)
+2) Run the training script:
 ```bash
 python3 train_dqn.py
 ```
@@ -37,7 +36,7 @@ python3 train_dqn.py
 # Steps to test model:
 1) In backtester.py , define your transaction cost rate for the backtester by setting a value for the 'transaction_cost_rate' variable.
 2) In test_dqn.py , define the model to upload for testing.
-3) 
+3) Run the testing script:
 ```bash
 python3 test_dqn.py
 ```
